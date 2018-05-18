@@ -11,6 +11,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+geckodriver.log
+
 # C extensions
 *.so
 

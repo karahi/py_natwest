@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 # -*- mode: python -*-
 
-import sys
+import sys,os,argparse
 
 if not getattr(sys, 'frozen', False):
     import imp
@@ -11,19 +11,59 @@ if not getattr(sys, 'frozen', False):
 
 from py_natwest import Natwest
 
-def main(arg):
-    print(arg)
-    nw = Natwest()
+
+def natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials):
+    nw = Natwest(credentials_file,download_location,command,pass_credentials)
+    new_transactions_file = nw.fetch()
+    return new_transactions_file
 
 
 if __name__ == '__main__':
-    try:
-        arg = sys.argv[1]
-    except Exception:
-        print("usage: " + sys.argv[0] + " command\n")
-        print("Available commands:")
-        print("statement : download bank statement")
-        print("balance : get account balance")
-        print("transactions : get last transactions")
-    main(arg)
+
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument('-c',
+                        "--credentials_file",
+                        help="yaml credentials file",
+                        type=str,
+                        default=os.path.expanduser('~/.ssh/.py_natwest.yml'))
+
+    parser.add_argument('-p',
+                        "--pass_credentials",
+                        help="pass credentials manually (y/n)",
+                        choices=['y', 'n'],
+                        type=str,
+                        default='n')
+
+
+    parser.add_argument('-d',
+                        "--download_location",
+                        help="download folder location",
+                        type=str,
+                        default=os.path.expanduser("~/Downloads/bank_statements"))
+
+    parser.add_argument('-k',
+                        "--command",
+                        help="download folder location",
+                        type=str,
+                        default='transactions',
+                        choices=['statement', 'balance', 'transactions'])
+
+
+    args = parser.parse_args(sys.argv[1:])
+
+    pass_credentials = args.pass_credentials
+    credentials_file = args.credentials_file
+    download_location = args.download_location
+    command=args.command
+
+    if not os.path.isfile(credentials_file) and not pass_credentials=='y':
+        print("Can't find credentials file %s - exiting!"%credentials_file)
+        sys.exit(-1)
+
+    if not os.path.isdir(download_location):
+        os.makedirs(download_location)
+
+    natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials)
+
 
