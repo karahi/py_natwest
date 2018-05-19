@@ -61,7 +61,7 @@ class ConfigManager():
 class Natwest():
     timeout = 10
 
-    def __init__(self,credentials_file=None,download_location=None,command=None, pass_credentials='n'):
+    def __init__(self,credentials_file=None,download_location=None,command=None, pass_credentials='n', headless='y' ):
         #        display = pyvirtualdisplay.Display(visible=0, size=(1280, 1024,))
         #        display.start()
         print('  Setting up Firefox...')
@@ -82,10 +82,11 @@ class Natwest():
             command='transactions'
         self.command=command
 
-        ff_profile=self.get_profile()
-
         options = webdriver.FirefoxOptions()
-        options.add_argument('--headless')
+        if headless=='y':
+            options.add_argument('--headless')
+
+        ff_profile=self.get_profile()
 
         self.driver = webdriver.Firefox(firefox_profile=ff_profile,options=options)
 
@@ -330,9 +331,9 @@ class Natwest():
         time.sleep(3)
         while(True):
             current_files = os.listdir(self.download_location)
-            part_files = [f for f in files if f[-5:]==".part"]
-            if len(part_files)>0:
-                print
+            part_files = [f for f in current_files if f[-5:]==".part"]
+            if len(part_files)==0:
+                break
             time.sleep(10)
         self.driver.close()
 

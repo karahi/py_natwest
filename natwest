@@ -12,8 +12,8 @@ if not getattr(sys, 'frozen', False):
 from py_natwest import Natwest
 
 
-def natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials):
-    nw = Natwest(credentials_file,download_location,command,pass_credentials)
+def natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials,headless):
+    nw = Natwest(credentials_file,download_location,command,pass_credentials,headless=headless)
     new_transactions_file = nw.fetch()
     return new_transactions_file
 
@@ -49,6 +49,14 @@ if __name__ == '__main__':
                         default='transactions',
                         choices=['statement', 'balance', 'transactions'])
 
+    parser.add_argument('-l',
+                        "--headless",
+                        help="fetch transactions with no window",
+                        type=str,
+                        default='y',
+                        choices=['y', 'n'])
+
+
 
     args = parser.parse_args(sys.argv[1:])
 
@@ -56,6 +64,7 @@ if __name__ == '__main__':
     credentials_file = args.credentials_file
     download_location = args.download_location
     command=args.command
+    headless=args.headless
 
     if not os.path.isfile(credentials_file) and not pass_credentials=='y':
         print("Can't find credentials file %s - exiting!"%credentials_file)
@@ -64,6 +73,6 @@ if __name__ == '__main__':
     if not os.path.isdir(download_location):
         os.makedirs(download_location)
 
-    natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials)
+    natwest_fetch_transactions(credentials_file,download_location,command,pass_credentials,headless)
 
 
