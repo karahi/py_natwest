@@ -184,7 +184,7 @@ class Natwest():
 
         self.wait_for_iframe_load()
         # something wrong with wait for iframe load...
-        if self.driver.title.encode('utf8') != 'Log in – PIN and password details' and self.driver.titles != 'Log in – PIN and password details':
+        if self.driver.title.encode('utf8') != 'Log in – PIN and password details' and self.driver.title != 'Log in – PIN and password details':
             sys.stderr.write('Wrong page title')
             sys.exit(1)
 
